@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tic-Tac-Toe - Unbeatable AI</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header class="game-header">
+            <h1>Tic-Tac-Toe AI Challenge</h1>
+            <div class="game-status">
+                <div class="current-player">
+                    <span id="current-player-text">Choose who goes first!</span>
+                </div>
+                <div class="ai-thinking hidden" id="ai-thinking">
+                    <span>AI is thinking</span>
+                    <div class="thinking-dots">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <main class="game-main">
+            <div class="game-area">
+                <div class="game-controls">
+                    <button class="btn btn--primary" id="player-first-btn">You Go First</button>
+                    <button class="btn btn--secondary" id="ai-first-btn">AI Goes First</button>
+                    <button class="btn btn--outline" id="new-game-btn" disabled>New Game</button>
+                </div>
+
+                <div class="game-board" id="game-board">
+                    <div class="cell" data-index="0"></div>
+                    <div class="cell" data-index="1"></div>
+                    <div class="cell" data-index="2"></div>
+                    <div class="cell" data-index="3"></div>
+                    <div class="cell" data-index="4"></div>
+                    <div class="cell" data-index="5"></div>
+                    <div class="cell" data-index="6"></div>
+                    <div class="cell" data-index="7"></div>
+                    <div class="cell" data-index="8"></div>
+                </div>
+
+                <div class="game-result hidden" id="game-result">
+                    <div class="result-text" id="result-text"></div>
+                    <div class="result-celebration" id="result-celebration"></div>
+                </div>
+            </div>
+
+            <div class="scoreboard">
+                <h3>Scoreboard</h3>
+                <div class="score-stats">
+                    <div class="stat-item">
+                        <div class="stat-label">Your Wins</div>
+                        <div class="stat-value" id="player-wins">0</div>
+                        <div class="stat-bar">
+                            <div class="stat-progress" id="player-wins-bar"></div>
+                        </div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">AI Wins</div>
+                        <div class="stat-value" id="ai-wins">0</div>
+                        <div class="stat-bar">
+                            <div class="stat-progress" id="ai-wins-bar"></div>
+                        </div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Draws</div>
+                        <div class="stat-value" id="draws">0</div>
+                        <div class="stat-bar">
+                            <div class="stat-progress" id="draws-bar"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="score-summary">
+                    <div class="summary-item">
+                        <span>Total Games:</span>
+                        <span id="total-games">0</span>
+                    </div>
+                    <div class="summary-item">
+                        <span>Win Rate:</span>
+                        <span id="win-rate">0%</span>
+                    </div>
+                </div>
+
+                <button class="btn btn--outline btn--sm" id="reset-stats-btn">Reset Statistics</button>
+            </div>
+        </main>
+
+        <footer class="game-footer">
+            <p>Challenge the unbeatable AI powered by Minimax algorithm with Alpha-Beta pruning</p>
+        </footer>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
