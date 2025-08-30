@@ -5,6 +5,7 @@ class TicTacToeAI {
         this.gameActive = false;
         this.gameStarted = false;
         this.winningPattern = null;
+        this.isAIThinking = false;
         
         // Game symbols
         this.HUMAN = 'O';
@@ -16,6 +17,10 @@ class TicTacToeAI {
             aiWins: 0,
             draws: 0
         };
+        
+        // Timing constants
+        this.AI_THINKING_DELAY = 800;
+        this.AI_MOVE_DELAY = 1200;
         
         this.initializeElements();
         this.bindEvents();
@@ -87,6 +92,7 @@ class TicTacToeAI {
         this.gameActive = true;
         this.gameStarted = true;
         this.winningPattern = null;
+        this.isAIThinking = false;
         
         // Update UI
         this.playerFirstBtn.disabled = true;
@@ -94,7 +100,7 @@ class TicTacToeAI {
         this.newGameBtn.disabled = false;
         this.gameBoard.classList.remove('disabled');
         this.gameResult.classList.add('hidden');
-        this.aiThinking.classList.add('hidden');
+        this.hideAIThinking();
         
         this.updateGameStatus();
         
@@ -110,6 +116,7 @@ class TicTacToeAI {
         this.gameActive = false;
         this.gameStarted = false;
         this.winningPattern = null;
+        this.isAIThinking = false;
         
         // Reset UI
         this.playerFirstBtn.disabled = false;
@@ -117,7 +124,7 @@ class TicTacToeAI {
         this.newGameBtn.disabled = true;
         this.gameBoard.classList.add('disabled');
         this.gameResult.classList.add('hidden');
-        this.aiThinking.classList.add('hidden');
+        this.hideAIThinking();
         this.currentPlayerText.textContent = 'Choose who goes first!';
     }
     
@@ -130,19 +137,35 @@ class TicTacToeAI {
     }
     
     handleCellClick(index) {
-        console.log(`Handling cell click: index=${index}, gameActive=${this.gameActive}, board[index]='${this.board[index]}', currentPlayer=${this.currentPlayer}`);
+        console.log(`Handling cell click: index=${index}, gameActive=${this.gameActive}, board[index]='${this.board[index]}', currentPlayer=${this.currentPlayer}, isAIThinking=${this.isAIThinking}`);
         
-        if (!this.gameActive || this.board[index] !== '' || this.currentPlayer !== this.HUMAN) {
-            console.log('Move rejected');
+        // Check if move is valid
+        if (!this.gameActive) {
+            console.log('Move rejected: game not active');
+            return;
+        }
+        
+        if (this.board[index] !== '') {
+            console.log('Move rejected: cell occupied');
+            return;
+        }
+        
+        if (this.currentPlayer !== this.HUMAN) {
+            console.log('Move rejected: not human turn');
+            return;
+        }
+        
+        if (this.isAIThinking) {
+            console.log('Move rejected: AI is thinking');
             return;
         }
         
         console.log('Making human move');
         this.makeMove(index, this.HUMAN);
         
-        if (this.gameActive) {
-            this.currentPlayer = this.AI;
-            this.updateGameStatus();
+        // Check if game is still active after human move
+        if (this.gameActive && this.currentPlayer !== this.HUMAN) {
+            // Switch to AI turn
             setTimeout(() => this.makeAIMove(), 500);
         }
     }
@@ -158,6 +181,10 @@ class TicTacToeAI {
         if (result) {
             console.log(`Game ended with result: ${result}`);
             this.endGame(result);
+        } else {
+            // Switch turns
+            this.currentPlayer = this.currentPlayer === this.HUMAN ? this.AI : this.HUMAN;
+            this.updateGameStatus();
         }
     }
     
@@ -167,18 +194,45 @@ class TicTacToeAI {
             return;
         }
         
-        console.log('AI is thinking...');
-        this.showAIThinking(true);
+        if (this.isAIThinking) {
+            console.log('AI move cancelled - already thinking');
+            return;
+        }
         
-        // Add small delay to show thinking animation
+        if (this.currentPlayer !== this.AI) {
+            console.log('AI move cancelled - not AI turn');
+            return;
+        }
+        
+        console.log('AI starting to think...');
+        this.isAIThinking = true;
+        this.showAIThinking();
+        
+        // Add delay to show thinking animation
         setTimeout(() => {
+            if (!this.gameActive) {
+                console.log('AI move cancelled during thinking - game ended');
+                this.isAIThinking = false;
+                this.hideAIThinking();
+                return;
+            }
+            
+            const availableMoves = this.getAvailableMoves(this.board);
+            if (availableMoves.length === 0) {
+                console.log('No available moves for AI');
+                this.isAIThinking = false;
+                this.hideAIThinking();
+                return;
+            }
+            
             const bestMove = this.minimax(this.board, this.AI, true, -Infinity, Infinity).index;
             console.log(`AI chose move: ${bestMove}`);
+            
+            this.isAIThinking = false;
+            this.hideAIThinking();
             this.makeMove(bestMove, this.AI);
-            this.currentPlayer = this.HUMAN;
-            this.showAIThinking(false);
-            this.updateGameStatus();
-        }, 800);
+            
+        }, this.AI_THINKING_DELAY);
     }
     
     // Minimax algorithm with alpha-beta pruning
@@ -193,7 +247,7 @@ class TicTacToeAI {
         const availableMoves = this.getAvailableMoves(board);
         
         if (availableMoves.length === 0) {
-            return { score: 0 };
+            return { score: 0, index: -1 };
         }
         
         if (isMaximizing) {
@@ -275,6 +329,8 @@ class TicTacToeAI {
     endGame(result) {
         console.log(`Game ended: ${result}`);
         this.gameActive = false;
+        this.isAIThinking = false;
+        this.hideAIThinking();
         
         // Highlight winning cells if there's a winner
         if (result !== 'draw' && this.winningPattern) {
@@ -325,19 +381,21 @@ class TicTacToeAI {
     }
     
     updateGameStatus() {
-        if (!this.gameActive) return;
+        if (!this.gameActive || this.isAIThinking) return;
         
         const playerName = this.currentPlayer === this.HUMAN ? 'Your' : 'AI\'s';
         this.currentPlayerText.textContent = `${playerName} Turn`;
     }
     
-    showAIThinking(show) {
-        if (show) {
-            this.aiThinking.classList.remove('hidden');
-            this.currentPlayerText.textContent = '';
-        } else {
-            this.aiThinking.classList.add('hidden');
-        }
+    showAIThinking() {
+        console.log('Showing AI thinking animation');
+        this.aiThinking.classList.remove('hidden');
+        this.currentPlayerText.textContent = '';
+    }
+    
+    hideAIThinking() {
+        console.log('Hiding AI thinking animation');
+        this.aiThinking.classList.add('hidden');
     }
     
     updateScoreboard() {

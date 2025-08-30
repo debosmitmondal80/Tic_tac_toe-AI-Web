@@ -791,6 +791,13 @@ body {
     gap: var(--space-8);
     color: var(--color-primary);
     font-weight: var(--font-weight-medium);
+    opacity: 1;
+    transition: opacity var(--duration-fast) var(--ease-standard);
+}
+
+.ai-thinking.hidden {
+    opacity: 0;
+    pointer-events: none;
 }
 
 .thinking-dots {
@@ -845,6 +852,72 @@ body {
     gap: var(--space-12);
     flex-wrap: wrap;
     justify-content: center;
+}
+
+/* Custom button styles for game controls */
+#player-first-btn {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    padding: var(--space-12) var(--space-20);
+    border-radius: var(--radius-base);
+    font-size: var(--font-size-base);
+    font-weight: 500;
+    cursor: pointer;
+    transition: all var(--duration-normal) var(--ease-standard);
+    box-shadow: var(--shadow-sm);
+}
+
+#player-first-btn:hover:not(:disabled) {
+    background: linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+
+#player-first-btn:active {
+    transform: translateY(0);
+}
+
+#player-first-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+}
+
+#ai-first-btn {
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    color: white;
+    border: none;
+    padding: var(--space-12) var(--space-20);
+    border-radius: var(--radius-base);
+    font-size: var(--font-size-base);
+    font-weight: 500;
+    cursor: pointer;
+    transition: all var(--duration-normal) var(--ease-standard);
+    box-shadow: var(--shadow-sm);
+}
+
+#ai-first-btn:hover:not(:disabled) {
+    background: linear-gradient(135deg, #e680f0 0%, #f0445a 100%);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+
+#ai-first-btn:active {
+    transform: translateY(0);
+}
+
+#ai-first-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* Focus states for custom buttons */
+#player-first-btn:focus-visible,
+#ai-first-btn:focus-visible {
+    outline: none;
+    box-shadow: var(--focus-ring), var(--shadow-md);
 }
 
 /* Game board */
@@ -1096,7 +1169,9 @@ body {
         align-items: center;
     }
     
-    .game-controls .btn {
+    .game-controls .btn,
+    #player-first-btn,
+    #ai-first-btn {
         width: 200px;
     }
     
@@ -1118,7 +1193,9 @@ body {
         font-size: var(--font-size-2xl);
     }
     
-    .game-controls .btn {
+    .game-controls .btn,
+    #player-first-btn,
+    #ai-first-btn {
         width: 100%;
     }
 }
@@ -1133,4 +1210,9 @@ body {
     transform: none;
     background: var(--color-background);
     border-color: var(--color-border);
+}
+
+/* Hidden utility class override for better performance */
+.hidden {
+    display: none !important;
 }
